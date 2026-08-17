@@ -54,6 +54,7 @@ return function(mod)
   if mod.content.field then
     local locations = {
       PALLET_TOWN = { name = "PUEBLO PALETA" },
+      OAKS_LAB = { name = "PUEBLO PALETA" },
       VIRIDIAN_CITY = { name = "CIUDAD VERDE" },
       PEWTER_CITY = { name = "CIUDAD PLATEADA" },
       CERULEAN_CITY = { name = "CIUDAD CELESTE" },
@@ -83,9 +84,9 @@ return function(mod)
       ROUTE_16 = { name = "RUTA 16" },
       ROUTE_17 = { name = "RUTA 17" },
       ROUTE_18 = { name = "RUTA 18" },
-      ROUTE_19 = { name = "RUTA 19" },
-      ROUTE_20 = { name = "RUTA 20" },
-      ROUTE_21 = { name = "RUTA 21" },
+      ROUTE_19 = { name = "RUTA MARÍTIMA 19" },
+      ROUTE_20 = { name = "RUTA MARÍTIMA 20" },
+      ROUTE_21 = { name = "RUTA MARÍTIMA 21" },
       ROUTE_22 = { name = "RUTA 22" },
       ROUTE_23 = { name = "RUTA 23" },
       ROUTE_24 = { name = "RUTA 24" },
@@ -112,12 +113,6 @@ return function(mod)
       CERULEAN_CAVE = { name = "CUEVA CELESTE" },
       POWER_PLANT = { name = "CENTRAL ENERGÍA" },
     }
-
-    -- Some Gen-I data identifies the three sea routes with SEA_ROUTE_* while
-    -- older generated caches expose ROUTE_19..21. Patch both spellings.
-    locations.ROUTE_19 = { name = "RUTA MARÍTIMA 19" }
-    locations.ROUTE_20 = { name = "RUTA MARÍTIMA 20" }
-    locations.ROUTE_21 = { name = "RUTA MARÍTIMA 21" }
 
     mod.content.field:patch("townMap", { locations = locations })
     mod.log:info("Español: Town Map locations translated")
