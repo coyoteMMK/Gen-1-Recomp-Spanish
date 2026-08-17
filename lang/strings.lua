@@ -177,7 +177,7 @@ return {
   ["DATA"] = "INFO",
   ["CRY"] = "GRIT",
   ["AREA"] = "",
-  ["QUIT"] = "SALE",
+  ["QUIT"] = "SALIR",
   ["%s (%s)"] = "",
   ["%s x%d"] = "",
   ["%s to box %d"] = "%s a la caja %d",
