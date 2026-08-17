@@ -1,0 +1,92 @@
+name: Release Spanish Mod
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, for example 1.0.0"
+        required: true
+        default: "1.0.0"
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version
+        id: version
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="${{ inputs.version }}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Validate manifest
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          with open("manifest.json", encoding="utf-8") as f:
+              manifest = json.load(f)
+          required = ["id", "name", "version", "api", "entry", "profile", "game_version", "category"]
+          missing = [k for k in required if k not in manifest]
+          if missing:
+              raise SystemExit(f"manifest.json missing: {', '.join(missing)}")
+          entry = manifest["entry"]
+          if not __import__("os").path.isfile(entry):
+              raise SystemExit(f"Manifest entry does not exist: {entry}")
+          print(f"Mod: {manifest['name']} {manifest['version']}")
+          PY
+
+      - name: Build ZIP
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          NAME="Gen-1-Recomp-Spanish-${VERSION}"
+          mkdir -p "dist/${NAME}"
+
+          # Copy the mod itself. Repository metadata and CI files are not
+          # part of the installable mod package.
+          rsync -a ./ "dist/${NAME}/" \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='dist/' \
+            --exclude='.gitignore'
+
+          mkdir -p dist/release
+          cd dist
+          zip -r "release/${NAME}.zip" "${NAME}" -x '*.DS_Store'
+
+          echo "Created dist/release/${NAME}.zip"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          ZIP="dist/release/Gen-1-Recomp-Spanish-${VERSION}.zip"
+          gh release create "v${VERSION}" "$ZIP" \
+            --title "Gen 1 Recomp Spanish v${VERSION}" \
+            --generate-notes \
+            --latest
+
+      - name: Upload ZIP as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Gen-1-Recomp-Spanish-${{ steps.version.outputs.version }}
+          path: dist/release/*.zip
+          if-no-files-found: error
