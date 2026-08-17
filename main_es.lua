@@ -48,52 +48,79 @@ return function(mod)
     mod.log:info("Español: %d extra engine strings applied", count)
   end
 
-  -- Town Map labels are data, not ordinary engine strings. The engine exposes
-  -- them through Data.field.townMap, so patch the existing location records
-  -- instead of replacing the map image. This keeps the original map layout,
-  -- coordinates and markers intact.
+  -- The Town Map is data-driven: these labels are not ordinary engine strings.
+  -- Keep the original map and translate every selectable Gen-I location.
+  -- Spanish names follow the Spain terminology used for the original games.
   if mod.content.field then
-    mod.content.field:patch("townMap", {
-      locations = {
-        PALLET_TOWN = { name = "PUEBLO PALETA" },
-        VIRIDIAN_CITY = { name = "CIUDAD VERDE" },
-        PEWTER_CITY = { name = "CIUDAD PLATEADA" },
-        CERULEAN_CITY = { name = "CIUDAD CELESTE" },
-        VERMILION_CITY = { name = "CIUDAD CARMÍN" },
-        LAVENDER_TOWN = { name = "PUEBLO LAVANDA" },
-        CELADON_CITY = { name = "CIUDAD AZAFRÁN" },
-        SAFFRON_CITY = { name = "CIUDAD AZAFRÁN" },
-        FUCHSIA_CITY = { name = "CIUDAD FUCSIA" },
-        CINNABAR_ISLAND = { name = "ISLA CANELA" },
-        INDIGO_PLATEAU = { name = "MESETA AÑIL" },
-        ROUTE_1 = { name = "RUTA 1" },
-        ROUTE_2 = { name = "RUTA 2" },
-        ROUTE_3 = { name = "RUTA 3" },
-        ROUTE_4 = { name = "RUTA 4" },
-        ROUTE_5 = { name = "RUTA 5" },
-        ROUTE_6 = { name = "RUTA 6" },
-        ROUTE_7 = { name = "RUTA 7" },
-        ROUTE_8 = { name = "RUTA 8" },
-        ROUTE_9 = { name = "RUTA 9" },
-        ROUTE_10 = { name = "RUTA 10" },
-        ROUTE_11 = { name = "RUTA 11" },
-        ROUTE_12 = { name = "RUTA 12" },
-        ROUTE_13 = { name = "RUTA 13" },
-        ROUTE_14 = { name = "RUTA 14" },
-        ROUTE_15 = { name = "RUTA 15" },
-        ROUTE_16 = { name = "RUTA 16" },
-        ROUTE_17 = { name = "RUTA 17" },
-        ROUTE_18 = { name = "RUTA 18" },
-        ROUTE_19 = { name = "RUTA 19" },
-        ROUTE_20 = { name = "RUTA 20" },
-        ROUTE_21 = { name = "RUTA 21" },
-        ROUTE_22 = { name = "RUTA 22" },
-        ROUTE_23 = { name = "RUTA 23" },
-        ROUTE_24 = { name = "RUTA 24" },
-        ROUTE_25 = { name = "RUTA 25" },
-      },
-    })
-    mod.log:info("Español: Town Map location names patched")
+    local locations = {
+      PALLET_TOWN = { name = "PUEBLO PALETA" },
+      VIRIDIAN_CITY = { name = "CIUDAD VERDE" },
+      PEWTER_CITY = { name = "CIUDAD PLATEADA" },
+      CERULEAN_CITY = { name = "CIUDAD CELESTE" },
+      LAVENDER_TOWN = { name = "PUEBLO LAVANDA" },
+      VERMILION_CITY = { name = "CIUDAD CARMÍN" },
+      CELADON_CITY = { name = "CIUDAD AZULONA" },
+      FUCHSIA_CITY = { name = "CIUDAD FUCSIA" },
+      CINNABAR_ISLAND = { name = "ISLA CANELA" },
+      INDIGO_PLATEAU = { name = "MESETA AÑIL" },
+      SAFFRON_CITY = { name = "CIUDAD AZAFRÁN" },
+
+      ROUTE_1 = { name = "RUTA 1" },
+      ROUTE_2 = { name = "RUTA 2" },
+      ROUTE_3 = { name = "RUTA 3" },
+      ROUTE_4 = { name = "RUTA 4" },
+      ROUTE_5 = { name = "RUTA 5" },
+      ROUTE_6 = { name = "RUTA 6" },
+      ROUTE_7 = { name = "RUTA 7" },
+      ROUTE_8 = { name = "RUTA 8" },
+      ROUTE_9 = { name = "RUTA 9" },
+      ROUTE_10 = { name = "RUTA 10" },
+      ROUTE_11 = { name = "RUTA 11" },
+      ROUTE_12 = { name = "RUTA 12" },
+      ROUTE_13 = { name = "RUTA 13" },
+      ROUTE_14 = { name = "RUTA 14" },
+      ROUTE_15 = { name = "RUTA 15" },
+      ROUTE_16 = { name = "RUTA 16" },
+      ROUTE_17 = { name = "RUTA 17" },
+      ROUTE_18 = { name = "RUTA 18" },
+      ROUTE_19 = { name = "RUTA 19" },
+      ROUTE_20 = { name = "RUTA 20" },
+      ROUTE_21 = { name = "RUTA 21" },
+      ROUTE_22 = { name = "RUTA 22" },
+      ROUTE_23 = { name = "RUTA 23" },
+      ROUTE_24 = { name = "RUTA 24" },
+      ROUTE_25 = { name = "RUTA 25" },
+      SEA_ROUTE_19 = { name = "RUTA MARÍTIMA 19" },
+      SEA_ROUTE_20 = { name = "RUTA MARÍTIMA 20" },
+      SEA_ROUTE_21 = { name = "RUTA MARÍTIMA 21" },
+
+      VIRIDIAN_FOREST = { name = "BOSQUE VERDE" },
+      MT_MOON = { name = "MONTE MOON" },
+      ROCK_TUNNEL = { name = "TÚNEL ROCA" },
+      SEA_COTTAGE = { name = "CASA DEL MAR" },
+      SS_ANNE = { name = "S.S. ANNE" },
+      POKEMON_LEAGUE = { name = "LIGA POKÉMON" },
+      UNDERGROUND_PATH = { name = "VÍA SUBTERRÁNEA" },
+      POKEMON_TOWER = { name = "TORRE POKÉMON" },
+      SEAFOAM_ISLANDS = { name = "ISLAS ESPUMA" },
+      VICTORY_ROAD = { name = "CALLE VICTORIA" },
+      DIGLETTS_CAVE = { name = "CUEVA DIGLETT" },
+      ROCKET_HQ = { name = "GUARIDA ROCKET" },
+      SILPH_CO = { name = "SILPH S.A." },
+      POKEMON_MANSION = { name = "MANSIÓN POKÉMON" },
+      SAFARI_ZONE = { name = "ZONA SAFARI" },
+      CERULEAN_CAVE = { name = "CUEVA CELESTE" },
+      POWER_PLANT = { name = "CENTRAL ENERGÍA" },
+    }
+
+    -- Some Gen-I data identifies the three sea routes with SEA_ROUTE_* while
+    -- older generated caches expose ROUTE_19..21. Patch both spellings.
+    locations.ROUTE_19 = { name = "RUTA MARÍTIMA 19" }
+    locations.ROUTE_20 = { name = "RUTA MARÍTIMA 20" }
+    locations.ROUTE_21 = { name = "RUTA MARÍTIMA 21" }
+
+    mod.content.field:patch("townMap", { locations = locations })
+    mod.log:info("Español: Town Map locations translated")
   end
 
   -- literal_handlers.lua contains map/NPC text that cannot be represented
